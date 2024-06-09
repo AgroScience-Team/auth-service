@@ -12,6 +12,8 @@
 ## Сборка и запуск проекта:
     git clone https://github.com/AgroScience-Team/auth-service.git
 
+Поднять Kafka: https://github.com/AgroScience-Team/kafka/blob/main/README.md 
+
 Если не создана docker-сеть `agronetwork`, то:
 
     docker create network agronetwork
