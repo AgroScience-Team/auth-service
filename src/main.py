@@ -11,7 +11,7 @@ from src.broker.consumer import get_consumer
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     consumer = get_consumer()
-    consuming = asyncio.create_task(consumer.delete_users())
+    consuming = asyncio.create_task(consumer.consume())
     await asyncio.gather(consuming)
     yield
     

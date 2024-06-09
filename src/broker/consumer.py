@@ -28,7 +28,7 @@ class AIOConsumer:
     async def __stop(self) -> None:
         await self.__consumer.stop()
 
-    async def delete_users(self) -> None:
+    async def consume(self) -> None:
         await self.__start()
         try:
             messages = [
