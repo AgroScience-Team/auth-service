@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
+from src.broker.producer import AIOProducer, get_producer
 from src.schemas.token import TokenPayloadSchema
 from src.schemas.user import UserCreateSchema, UserResponseSchema, UserUpdateSchema
 from src.service import AuthService
@@ -41,12 +42,12 @@ async def update_user(
     await service.update_user(int(user_info.sub), schema)
 
 
-@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/me", status_code=status.HTTP_202_ACCEPTED)
 async def delete_user(
     user_info: TokenPayloadSchema = Depends(Token.verify_token),
     service: AuthService = Depends()
 ):
-    await service.delete_user(int(user_info.sub))
+    await service.delete_users_event(int(user_info.sub))
 
 
 @router.get("/workers", response_model=list[UserResponseSchema])
@@ -58,10 +59,10 @@ async def get_created_users(
     return users
 
 
-@router.delete("/workers/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/workers/{id}", status_code=status.HTTP_202_ACCEPTED)
 async def delete_worker(
     id: int,
     organization_info: TokenPayloadSchema = Depends(Token.verify_organization),
     service: AuthService = Depends()
 ):
-    await service.delete_worker(int(organization_info.sub), id)
+    await service.delete_users_event(id)

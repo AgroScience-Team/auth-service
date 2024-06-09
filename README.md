@@ -7,6 +7,7 @@
 - PostgreSQL 
 - SQLAlchemy v2
 - Pydantic v2
+- AIOKafka
 
 ## Сборка и запуск проекта:
     git clone https://github.com/AgroScience-Team/auth-service.git
