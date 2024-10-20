@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import BaseModel, Field, field_validator, validate_email
 
 from src.utils.roles import RoleEnum
@@ -22,7 +24,7 @@ class UserCreateSchema(UserUpdateSchema):
 
 
 class UserResponseSchema(BaseModel):
-    id: int
+    id: uuid.UUID
     email: str = Field(max_length=128)
     role: RoleEnum
-    created_by: int | None = None
+    created_by: uuid.UUID | None = None

@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Depends, status
 
 from src.schemas.token import TokenPayloadSchema
@@ -18,7 +20,7 @@ async def create_user(
     organization_info: TokenPayloadSchema = Depends(Token.verify_organization),
     service: AuthService = Depends()
 ):
-    user = await service.create_user(schema, int(organization_info.sub))
+    user = await service.create_user(schema, uuid.UUID(organization_info.sub))
     return user
 
 
@@ -27,7 +29,7 @@ async def get_user(
     user_info: TokenPayloadSchema = Depends(Token.verify_token),
     service: AuthService = Depends()
 ):
-    user = await service.read_user(id=int(user_info.sub))
+    user = await service.read_user(id=uuid.UUID(user_info.sub))
     return user
 
 
@@ -38,7 +40,7 @@ async def update_user(
     service: AuthService = Depends(),
     
 ):
-    await service.update_user(int(user_info.sub), schema)
+    await service.update_user(uuid.UUID(user_info.sub), schema)
 
 
 @router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
@@ -46,7 +48,7 @@ async def delete_user(
     user_info: TokenPayloadSchema = Depends(Token.verify_token),
     service: AuthService = Depends()
 ):
-    await service.delete_user(int(user_info.sub))
+    await service.delete_user(uuid.UUID(user_info.sub))
 
 
 @router.get("/workers", response_model=list[UserResponseSchema])
@@ -54,14 +56,14 @@ async def get_created_users(
     organization_info: TokenPayloadSchema = Depends(Token.verify_organization),
     service: AuthService = Depends()
 ):
-    users = await service.read_created_users(int(organization_info.sub))
+    users = await service.read_created_users(uuid.UUID(organization_info.sub))
     return users
 
 
 @router.delete("/workers/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_worker(
-    id: int,
+    id: str,
     organization_info: TokenPayloadSchema = Depends(Token.verify_organization),
     service: AuthService = Depends()
 ):
-    await service.delete_worker(int(organization_info.sub), id)
+    await service.delete_worker(uuid.UUID(organization_info.sub), uuid.UUID(id))
