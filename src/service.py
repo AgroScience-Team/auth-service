@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta
 
 from fastapi import Depends, HTTPException, status
@@ -18,7 +19,7 @@ class AuthService:
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         self.session = session
     
-    async def read_user(self, id: int = None, email: str = None) -> User:
+    async def read_user(self, id: uuid.UUID = None, email: str = None) -> User:
         if id:
             result = await self.session.execute(
                 select(User)
@@ -40,7 +41,7 @@ class AuthService:
     async def create_user(
         self,
         schema: UserCreateSchema,
-        creator_id: int = None
+        creator_id: uuid.UUID = None
     ) -> User:
         try:
             user_duplicate = await self.read_user(email=schema.email)
@@ -78,31 +79,31 @@ class AuthService:
             sub=str(user.id),
             role=user.role,
             email=user.email,
-            org=user.created_by if user.created_by else user.id
+            org=str(user.created_by if user.created_by else user.id)
         )
         return Token.create_token(payload)
 
-    async def update_user(self, id: int, schema: UserUpdateSchema) -> None:
+    async def update_user(self, id: uuid.UUID, schema: UserUpdateSchema) -> None:
         user = await self.read_user(id=id)
         user.email = schema.email
         user.password_hashed = Token.get_password_hash(schema.text_password)
         await self.session.commit()
     
-    async def delete_user(self, id: int) -> None:
+    async def delete_user(self, id: uuid.UUID) -> None:
         await self.session.execute(
             delete(User)
             .where(User.id == id)
         )
         await self.session.commit()
 
-    async def read_created_users(self, id: int) -> list[User]:
+    async def read_created_users(self, id: uuid.UUID) -> list[User]:
         users = await self.session.execute(
             select(User)
             .where(User.created_by == id)
         )
         return users.scalars()
 
-    async def delete_worker(self, organization_id: int, worker_id: int) -> None:
+    async def delete_worker(self, organization_id: uuid.UUID, worker_id: uuid.UUID) -> None:
         worker = await self.read_user(id=worker_id)
         if worker.created_by != organization_id or worker.role != RoleEnum.WORKER.value:
             raise HTTPException(

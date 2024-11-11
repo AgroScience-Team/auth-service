@@ -15,10 +15,6 @@
 
     docker create network agronetwork
 
-Выполнить миграции (при необходимости):
-
-    docker compose -f docker-compose.yml run migrations
-
 Из корневой папки проекта:
 
     docker compose up -d 

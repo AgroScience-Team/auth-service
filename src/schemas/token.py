@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -14,4 +15,4 @@ class TokenPayloadSchema(BaseModel):
     sub: str
     role: str
     email: str
-    org: int
+    org: str
